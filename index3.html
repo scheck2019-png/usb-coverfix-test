@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>USB CoverFix Deluxe – Fairy Brutal Edition</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,Arial,sans-serif;
+}
+
+body{
+background:radial-gradient(circle at top,#13202c,#05080d);
+color:white;
+overflow:hidden;
+height:100vh;
+}
+
+.container{
+position:relative;
+z-index:2;
+max-width:1100px;
+margin:auto;
+padding:30px;
+text-align:center;
+}
+
+h1{
+font-size:48px;
+margin-top:20px;
+background:linear-gradient(90deg,#2ecc71,#f1c40f,#ff66cc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.sub{
+margin-top:10px;
+font-size:18px;
+opacity:.9;
+}
+
+.btns{
+margin-top:40px;
+display:flex;
+gap:20px;
+justify-content:center;
+flex-wrap:wrap;
+}
+
+.btn{
+padding:18px 34px;
+border:none;
+border-radius:50px;
+font-size:20px;
+font-weight:bold;
+cursor:pointer;
+transition:.25s;
+box-shadow:0 10px 25px rgba(0,0,0,.4);
+}
+
+.download{
+background:#2ecc71;
+color:#07140b;
+}
+
+.buy{
+background:linear-gradient(90deg,#f39c12,#e67e22);
+color:white;
+position:relative;
+}
+
+.btn:hover{
+transform:translateY(-4px) scale(1.03);
+}
+
+.cardwrap{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:18px;
+margin-top:45px;
+}
+
+.card{
+background:rgba(255,255,255,.05);
+padding:20px;
+border-radius:25px;
+backdrop-filter:blur(8px);
+border:1px solid rgba(255,255,255,.08);
+}
+
+.card h3{
+margin-bottom:10px;
+color:#2ecc71;
+}
+
+.footer{
+margin-top:40px;
+opacity:.7;
+font-size:14px;
+}
+
+/* Fairy */
+#fairy{
+position:fixed;
+left:120px;
+top:120px;
+font-size:56px;
+z-index:9999;
+user-select:none;
+cursor:pointer;
+transition:.15s;
+filter:drop-shadow(0 0 10px #2ecc71);
+}
+
+/* Magic Particles */
+.spark{
+position:fixed;
+width:8px;
+height:8px;
+border-radius:50%;
+background:#f1c40f;
+pointer-events:none;
+z-index:9998;
+animation:fade .8s linear forwards;
+}
+
+@keyframes fade{
+0%{opacity:1;transform:scale(1);}
+100%{opacity:0;transform:translateY(-20px) scale(0);}
+}
+
+/* Messagebox */
+#msg{
+position:fixed;
+top:30px;
+left:50%;
+transform:translateX(-50%);
+background:#111c25;
+padding:18px 26px;
+border-radius:20px;
+border:1px solid #2ecc71;
+display:none;
+z-index:10000;
+font-size:18px;
+box-shadow:0 15px 35px rgba(0,0,0,.5);
+}
+</style>
+</head>
+
+<body>
+
+<div id="msg"></div>
+<div id="fairy">🧚</div>
+
+<div class="container">
+
+<h1>USB CoverFix Deluxe ✨</h1>
+<div class="sub">Magische Cover-Lösung für MP3 & Autoradio</div>
+
+<div class="btns">
+<button class="btn download">⬇ Kostenlos Download</button>
+<button class="btn buy" id="buyButton">💎 Vollversion 19,90€</button>
+</div>
+
+<div class="cardwrap">
+<div class="card">
+<h3>🎵 MP3 Power</h3>
+Backup, Batch, Auto Cover
+</div>
+
+<div class="card">
+<h3>🚗 Autoradio</h3>
+folder.jpg kompatibel
+</div>
+
+<div class="card">
+<h3>⚡ Schnell</h3>
+1 Klick Verarbeitung
+</div>
+
+<div class="card">
+<h3>🧚 Fairy AI</h3>
+Sie beobachtet dich 👀
+</div>
+</div>
+
+<div class="footer">
+© Siegfried Scheck – Brutal Fairy Edition
+</div>
+
+</div>
+
+<script>
+const fairy = document.getElementById("fairy");
+const buy = document.getElementById("buyButton");
+const msg = document.getElementById("msg");
+
+let fx=150, fy=150;
+let tx=400, ty=250;
+let angry=false;
+let mode="normal";
+
+/* Maus */
+document.addEventListener("mousemove",(e)=>{
+tx=e.clientX;
+ty=e.clientY;
+});
+
+/* Touch */
+document.addEventListener("touchmove",(e)=>{
+tx=e.touches[0].clientX;
+ty=e.touches[0].clientY;
+},{passive:true});
+
+/* Nachricht */
+function showMsg(text){
+msg.innerText=text;
+msg.style.display="block";
+setTimeout(()=>msg.style.display="none",2200);
+}
+
+/* Sparkles */
+function sparkle(x,y){
+let s=document.createElement("div");
+s.className="spark";
+s.style.left=x+"px";
+s.style.top=y+"px";
+document.body.appendChild(s);
+setTimeout(()=>s.remove(),800);
+}
+
+/* Fairy AI */
+setInterval(()=>{
+
+let r=Math.random();
+
+if(r<0.35){
+mode="follow";
+angry=false;
+fairy.innerHTML="🧚";
+}
+
+else if(r<0.65){
+mode="buy";
+angry=true;
+fairy.innerHTML="😡🧚";
+let b=buy.getBoundingClientRect();
+tx=b.left+100;
+ty=b.top;
+showMsg("Kauf endlich 😈");
+}
+
+else{
+mode="dance";
+fairy.innerHTML="💃🧚";
+showMsg("Ich tanze!");
+}
+
+},5000);
+
+/* Bewegung */
+function fly(){
+
+if(mode==="dance"){
+tx += Math.sin(Date.now()/300)*2;
+ty += Math.cos(Date.now()/300)*2;
+}
+
+let speed = angry ? 0.16 : 0.08;
+
+fx += (tx-fx)*speed;
+fy += (ty-fy)*speed;
+
+fairy.style.left=fx+"px";
+fairy.style.top=fy+"px";
+
+fairy.style.transform=
+`rotate(${(tx-fx)}deg) scale(${angry?1.35:1})`;
+
+sparkle(fx+20,fy+20);
+
+requestAnimationFrame(fly);
+}
+fly();
+
+/* Klick auf Fee */
+fairy.addEventListener("click",()=>{
+
+let list=[
+"💋 Kauf doch für 19,90€",
+"✨ Du bist hübsch",
+"😈 Nicht ignorieren!",
+"🧚 Ich liebe CoverFix",
+"💎 Jetzt kaufen!"
+];
+
+fairy.innerHTML="💋🧚";
+showMsg(list[Math.floor(Math.random()*list.length)]);
+
+setTimeout(()=>{
+fairy.innerHTML="🧚";
+},1200);
+
+});
+
+/* Buy Button */
+buy.addEventListener("click",()=>{
+showMsg("💎 Weiterleitung zum Shop...");
+});
+
+/* Wenn Maus schnell bewegt -> Fee Panik */
+let lastX=0;
+setInterval(()=>{
+if(Math.abs(tx-lastX)>180){
+showMsg("😱 Zu schnell!");
+angry=true;
+setTimeout(()=>angry=false,1000);
+}
+lastX=tx;
+},300);
+</script>
+
+</body>
+  </html>
