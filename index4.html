@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>USB CoverFix Deluxe — Cyber Magical Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, monospace;
+            background: radial-gradient(circle at 20% 30%, #050a0f, #000000);
+            color: #eef;
+            overflow-x: hidden;
+            transition: background 0.3s;
+        }
+        /* Киберпанк-режим */
+        body.cyberpunk {
+            background: #0a0015;
+            box-shadow: 0 0 15px #0ff, inset 0 0 10px #f0f;
+        }
+        body.cyberpunk .container {
+            border-color: #0ff;
+            box-shadow: 0 0 30px rgba(0,255,255,0.3);
+        }
+        .custom-cursor {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #2ecc71;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transition: 0.1s;
+            background: rgba(46,204,113,0.2);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            background: rgba(15,25,35,0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 28px;
+            border: 1px solid #2ecc71;
+            transition: 0.3s;
+        }
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #2ecc71, #f1c40f, #e67e22);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* 3D-текст параллакс */
+        .parallax-text {
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #2ecc71;
+            transition: transform 0.1s ease-out;
+            display: inline-block;
+        }
+        .btn {
+            background: linear-gradient(95deg, #2ecc71, #27ae60);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: #0a0e12;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .btn-buy {
+            background: linear-gradient(95deg, #f39c12, #e67e22);
+            color: white;
+        }
+        /* 3D-куб */
+        #cubeContainer {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            position: relative;
+        }
+        canvas#threeCanvas {
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            background: rgba(0,0,0,0.3);
+        }
+        /* Эквалайзер */
+        .equalizer {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin: 20px 0;
+        }
+        .eq-bar {
+            width: 12px;
+            height: 40px;
+            background: #2ecc71;
+            border-radius: 10px;
+            transition: height 0.1s;
+        }
+        /* AI Cover Generator */
+        .ai-gen {
+            background: rgba(0,0,0,0.5);
+            border-radius: 28px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .ai-gen input {
+            padding: 12px;
+            border-radius: 60px;
+            border: 1px solid #2ecc71;
+            background: #0a0e12;
+            color: white;
+            width: 70%;
+        }
+        .magic-cover {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #f1c40f, #e74c3c);
+            border-radius: 20px;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        /* Дождь цифр для киберпанка */
+        .cyber-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            font-family: monospace;
+            color: #0f0;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        body.cyberpunk .cyber-rain {
+            opacity: 0.2;
+        }
+        .feature-card {
+            background: rgba(30,42,54,0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 16px;
+            transition: 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 30px rgba(46,204,113,0.3);
+        }
+        @media (max-width: 700px) {
+            .container { padding: 16px; }
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="custom-cursor" id="cursor"></div>
+<div class="cyber-rain" id="cyberRain"></div>
+
+<div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+        <h1 class="parallax-text" id="title3d">USB CoverFix</h1>
+        <div class="version" style="background:#2ecc71; border-radius:60px; padding:4px 16px;">v5.0 MAGIC</div>
+    </div>
+
+    <div style="margin:15px 0; display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
+        <span id="personal-greeting" style="background:rgba(46,204,113,0.2); padding:6px 20px; border-radius:40px; cursor:pointer;">👋 Hallo, Magier</span>
+        <a href="#" id="cyberBtn" style="background:#f1c40f20; padding:6px 20px; border-radius:40px;">🔥 Cyberpunk Mode</a>
+        <button id="voiceBtn" style="background:#2ecc7130; border:none; border-radius:40px; padding:6px 20px;">🎤 Sprachsteuerung</button>
+    </div>
+
+    <!-- 3D Cube + Equalizer -->
+    <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">
+        <div id="cubeContainer" style="width:200px; height:200px;"></div>
+        <div class="equalizer" id="equalizer">
+            <div class="eq-bar" style="height:20px"></div><div class="eq-bar" style="height:45px"></div><div class="eq-bar" style="height:30px"></div>
+            <div class="eq-bar" style="height:60px"></div><div class="eq-bar" style="height:25px"></div><div class="eq-bar" style="height:50px"></div>
+        </div>
+    </div>
+
+    <!-- AI Cover Generator -->
+    <div class="ai-gen">
+        <p><i class="fas fa-magic"></i> KI-Cover-Generator (sag den Songtitel)</p>
+        <input type="text" id="songInput" placeholder="z.B. 'Bohemian Rhapsody'">
+        <button id="genCoverBtn" class="btn" style="padding:8px 18px;">✨ Magisches Cover zaubern</button>
+        <div id="magicCover" class="magic-cover" style="width:80px; height:80px;"></div>
+    </div>
+
+    <!-- Карусель + остальное (сокращённо для читаемости, но функционально) -->
+    <div class="carousel-wrapper" style="margin:20px 0; border-radius:32px; overflow:hidden;">
+        <div class="carousel-slides" id="carouselSlides" style="display:flex; overflow-x:auto;">
+            <div class="carousel-slide" style="flex:0 0 100%;"><img src="screenshot_main.png" style="width:100%; aspect-ratio:16/9;" onerror="this.src='https://picsum.photos/800/450?random=1'"><div class="carousel-caption">Hauptfenster</div></div>
+            <div class="carousel-slide" style="flex:0 0 100%;"><img src="screenshot_batch.png" style="width:100%; aspect-ratio:16/9;" onerror="this.src='https://picsum.photos/800/450?random=2'"><div class="carousel-caption">Batch-Modus</div></div>
+        </div>
+        <div class="carousel-dots" id="carouselDots" style="display:flex; justify-content:center; gap:8px; padding:10px;"></div>
+        <div class="carousel-arrow arrow-left" id="carouselPrev" style="position:absolute; left:10px; top:50%; background:rgba(0,0,0,0.6); border-radius:50%; width:36px; text-align:center; cursor:pointer;">‹</div>
+        <div class="carousel-arrow arrow-right" id="carouselNext" style="position:absolute; right:10px; top:50%; background:rgba(0,0,0,0.6); border-radius:50%; width:36px; text-align:center; cursor:pointer;">›</div>
+    </div>
+
+    <!-- Карточки фич (кратко) -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin:20px 0;">
+        <div class="feature-card"><h3>🎵 MP3 Batch</h3><ul><li>Cover in 1 Sek</li><li>Backup</li></ul></div>
+        <div class="feature-card"><h3>🚗 Car-Radio</h3><ul><li>Automatik</li><li>JPEG/PNG</li></ul></div>
+        <div class="feature-card"><h3>🧚 KI-Fee</h3><ul><li>Fliegend</li><li>Sprüche</li></ul></div>
+        <div class="feature-card"><h3>🎮 Easter Egg</h3><ul><li>Konami Code</li><li>BrickBreak</li></ul></div>
+    </div>
+
+    <div style="display:flex; gap:16px; justify-content:center; margin:20px 0;">
+        <a href="#" class="btn">⬇️ Gratis Download</a>
+        <a href="#" id="buyButton" class="btn btn-buy">💎 Vollversion</a>
+    </div>
+    <div class="download-counter" style="text-align:center;">📥 <span id="download-count">…</span> Downloads</div>
+    <div class="footer" style="text-align:center; margin-top:24px;">© Siegfried Scheck | <button id="shareButton" style="background:none; border:none; color:#2ecc71;"><i class="fas fa-share"></i> Teilen</button></div>
+</div>
+
+<!-- Модалки -->
+<div class="modal-overlay" id="paymentModal"><div class="modal-box"><p>💎 Weiterleitung zu Ko-fi</p><button class="btn" id="modalOkBtn">OK</button></div></div>
+<div class="modal-overlay" id="nameModal"><div class="modal-box"><p>✨ Dein Name</p><input id="userNameInput"><div><button id="saveNameBtn" class="btn">Speichern</button><button id="cancelNameBtn" class="btn">Abbrechen</button></div></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    (function(){
+        // 3D Cube
+        const container = document.getElementById('cubeContainer');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(200, 200);
+        container.appendChild(renderer.domElement);
+        const geometry = new THREE.BoxGeometry(1.2,1.2,1.2);
+        const textures = ['#2ecc71','#f1c40f','#e74c3c','#3498db','#9b59b6','#1abc9c'].map(c => new THREE.MeshStandardMaterial({ color: c, roughness:0.3, metalness:0.7 }));
+        const cube = new THREE.Mesh(geometry, textures);
+        scene.add(cube);
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(2,2,2);
+        scene.add(light);
+        camera.position.z = 2.5;
+        let mouseX=0, mouseY=0;
+        document.addEventListener('mousemove', (e) => { mouseX = (e.clientX / window.innerWidth) * 2 - 1; mouseY = (e.clientY / window.innerHeight) * 2 - 1; });
+        function animate() {
+            cube.rotation.x += 0.005;
+            cube.rotation.y += 0.01;
+            cube.rotation.x += mouseY * 0.02;
+            cube.rotation.y += mouseX * 0.02;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Эквалайзер (анимация)
+        const bars = document.querySelectorAll('.eq-bar');
+        setInterval(() => {
+            bars.forEach(bar => { let h = 20 + Math.random() * 60; bar.style.height = h + 'px'; });
+        }, 200);
+
+        // Генератор "магических" обложек
+        document.getElementById('genCoverBtn').addEventListener('click', () => {
+            let song = document.getElementById('songInput').value || 'Magic';
+            let hue = Math.random() * 360;
+            let grad = `linear-gradient(135deg, hsl(${hue}, 80%, 60%), hsl(${hue+40}, 80%, 50%))`;
+            let coverDiv = document.getElementById('magicCover');
+            coverDiv.style.background = grad;
+            coverDiv.innerHTML = `<i class="fas fa-music" style="font-size:40px; color:white; display:flex; align-items:center; justify-content:center; height:100%;"></i>`;
+            alert(`✨ Magisches Cover für "${song}" generiert! (Demo-KI)`);
+        });
+
+        // Sprachsteuerung
+        const voiceBtn = document.getElementById('voiceBtn');
+        if ('webkitSpeechRecognition' in window) {
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = 'de-DE';
+            voiceBtn.addEventListener('click', () => {
+                recognition.start();
+                voiceBtn.textContent = '🎤 Höre zu...';
+            });
+            recognition.onresult = (event) => {
+                let cmd = event.results[0][0].transcript.toLowerCase();
+                if (cmd.includes('start') || cmd.includes('weiter')) document.getElementById('carouselNext').click();
+                if (cmd.includes('stop') || cmd.includes('zurück')) document.getElementById('carouselPrev').click();
+                if (cmd.includes('theme') || cmd.includes('farbe')) document.body.classList.toggle('cyberpunk');
+                alert(`Befehl erkannt: ${cmd}`);
+                voiceBtn.textContent = '🎤 Sprachsteuerung';
+            };
+        } else { voiceBtn.disabled = true; voiceBtn.textContent = '🎤 Nicht unterstützt'; }
+
+        // Cyberpunk Mode + Regen
+        const cyberBtn = document.getElementById('cyberBtn');
+        let cyberActive = false;
+        cyberBtn.addEventListener('click', () => {
+            document.body.classList.toggle('cyberpunk');
+            cyberActive = !cyberActive;
+            if (cyberActive) startCyberRain();
+            else stopCyberRain();
+        });
+        let rainInterval;
+        function startCyberRain() {
+            const rainDiv = document.getElementById('cyberRain');
+            rainDiv.style.opacity = '0.2';
+            rainInterval = setInterval(() => {
+                let char = Math.random() > 0.5 ? '1' : '0';
+                let span = document.createElement('span');
+                span.textContent = char;
+                span.style.position = 'absolute';
+                span.style.left = Math.random() * 100 + '%';
+                span.style.top = '-20px';
+                span.style.opacity = Math.random();
+                span.style.animation = 'fall 3s linear';
+                rainDiv.appendChild(span);
+                setTimeout(() => span.remove(), 3000);
+            }, 100);
+        }
+        function stopCyberRain() { clearInterval(rainInterval); document.getElementById('cyberRain').innerHTML = ''; }
+        const style = document.createElement('style');
+        style.textContent = `@keyframes fall { to { transform: translateY(100vh); opacity:0; } }`;
+        document.head.appendChild(style);
+
+        // Карусель простая
+        const slides = document.getElementById('carouselSlides');
+        const dotsDiv = document.getElementById('carouselDots');
+        const slideCount = document.querySelectorAll('.carousel-slide').length;
+        for(let i=0;i<slideCount;i++){ let d=document.createElement('span'); d.classList.add('dot'); d.addEventListener('click',()=>{ slides.scrollTo({left:i*slides.clientWidth,behavior:'smooth'}); }); dotsDiv.appendChild(d); }
+        function updateDots(){ let idx=Math.round(slides.scrollLeft/slides.clientWidth); document.querySelectorAll('.dot').forEach((d,i)=>{ if(i===idx) d.classList.add('active'); else d.classList.remove('active'); }); }
+        slides.addEventListener('scroll',updateDots); window.addEventListener('resize',updateDots); updateDots();
+        document.getElementById('carouselPrev')?.addEventListener('click',()=>slides.scrollBy({left:-slides.clientWidth,behavior:'smooth'}));
+        document.getElementById('carouselNext')?.addEventListener('click',()=>slides.scrollBy({left:slides.clientWidth,behavior:'smooth'}));
+
+        // Остальные модалки и прочее из предыдущей версии (сокращено)
+        const payModal = document.getElementById('paymentModal');
+        const modalOk = document.getElementById('modalOkBtn');
+        document.getElementById('buyButton')?.addEventListener('click',(e)=>{ e.preventDefault(); payModal.classList.add('show'); });
+        modalOk.addEventListener('click',()=> payModal.classList.remove('show'));
+        // Имя
+        let userName = localStorage.getItem('userName');
+        const greetSpan = document.getElementById('personal-greeting');
+        const nameModal = document.getElementById('nameModal');
+        const nameInput = document.getElementById('userNameInput');
+        function updateGreeting(){ greetSpan.innerText = userName ? `👋 Hallo, ${userName}!` : `👋 Hallo, Magier`; }
+        updateGreeting();
+        greetSpan.addEventListener('click',()=>{ nameInput.value=userName||''; nameModal.classList.add('show'); });
+        document.getElementById('saveNameBtn').addEventListener('click',()=>{ userName=nameInput.value.trim()||null; if(userName) localStorage.setItem('userName',userName); else localStorage.removeItem('userName'); updateGreeting(); nameModal.classList.remove('show'); });
+        document.getElementById('cancelNameBtn').addEventListener('click',()=> nameModal.classList.remove('show'));
+        // Счётчик загрузок
+        fetch('https://api.github.com/repos/scheck2019-png/usb-coverfix-update/releases').then(r=>r.json()).then(data=>{ let total=0; data.forEach(r=>{ r.assets.forEach(a=>total+=a.download_count); }); document.getElementById('download-count').innerText=total; }).catch(()=>document.getElementById('download-count').innerText='4800+');
+        // Поделиться
+        document.getElementById('shareButton')?.addEventListener('click',()=>{ if(navigator.share) navigator.share({title:'USB CoverFix', text:'Magische Cover fürs Autoradio', url:location.href}); else alert(location.href); });
+        // Параллакс 3D-текст
+        const title = document.getElementById('title3d');
+        document.addEventListener('mousemove',(e)=>{ let x = (e.clientX / window.innerWidth - 0.5) * 20; let y = (e.clientY / window.innerHeight - 0.5) * 10; title.style.transform = `translate(${x}px, ${y}px)`; });
+        // Игра BrickBreak (konami) – упрощённо
+        let konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'], idx=0;
+        window.addEventListener('keydown',(e)=>{ if(e.key===konami[idx]){ idx++; if(idx===konami.length){ alert('🎮 Easter Egg: BrickBreak! (Demo)'); idx=0; } } else idx=0; });
+    })();
+</script>
+</body>
+          </html>
